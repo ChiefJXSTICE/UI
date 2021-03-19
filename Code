@@ -1004,7 +1004,7 @@ do
 
 		return keybind
 	end
-	
+
 	function section:addTextbox2(title, default, callback)
 		local Npcbox = utility:Create("ImageButton", {
 			Name = "NpcBox",
@@ -1112,7 +1112,7 @@ do
 
 		return Npcbox
 	end
-	
+
 	function section:addTextbox3(title, default, callback)
 		local Npcbox3 = utility:Create("ImageButton", {
 			Name = "NpcBox3",
@@ -1220,7 +1220,7 @@ do
 
 		return Npcbox3
 	end
-	
+
 	function section:addTextbox4(title, default, callback)
 		local Npcbox4 = utility:Create("ImageButton", {
 			Name = "NpcBox4",
@@ -1329,6 +1329,114 @@ do
 		return Npcbox4
 	end
 	
+	function section:addStatbox(title, default, callback)
+		local StatBox1 = utility:Create("ImageButton", {
+			Name = "StatBox1",
+			Parent = self.container,
+			BackgroundTransparency = 1,
+			BorderSizePixel = 0,
+			Size = UDim2.new(1, 0, 0, 30),
+			ZIndex = 2,
+			Image = "rbxassetid://5028857472",
+			ImageColor3 = themes.DarkContrast,
+			ScaleType = Enum.ScaleType.Slice,
+			SliceCenter = Rect.new(2, 2, 298, 298)
+		}, {
+			utility:Create("TextLabel", {
+				Name = "StatNameTitle",
+				AnchorPoint = Vector2.new(0, 0.5),
+				BackgroundTransparency = 1,
+				Position = UDim2.new(0, 10, 0.5, 1),
+				Size = UDim2.new(0.5, 0, 1, 0),
+				ZIndex = 3,
+				Font = Enum.Font.Gotham,
+				Text = title,
+				TextColor3 = themes.TextColor,
+				TextSize = 12,
+				TextTransparency = 0.10000000149012,
+				TextXAlignment = Enum.TextXAlignment.Left
+			}),
+			utility:Create("ImageLabel", {
+				Name = "Button",
+				BackgroundTransparency = 1,
+				Position = UDim2.new(1, -110, 0.5, -8),
+				Size = UDim2.new(0, 100, 0, 16),
+				ZIndex = 2,
+				Image = "rbxassetid://5028857472",
+				ImageColor3 = themes.LightContrast,
+				ScaleType = Enum.ScaleType.Slice,
+				SliceCenter = Rect.new(2, 2, 298, 298)
+			}, {
+				utility:Create("TextBox", {
+					Name = "User", 
+					BackgroundTransparency = 1,
+					TextTruncate = Enum.TextTruncate.AtEnd,
+					Position = UDim2.new(0, 5, 0, 0),
+					Size = UDim2.new(1, -10, 1, 0),
+					ZIndex = 3,
+					Font = Enum.Font.GothamSemibold,
+					Text = default or "",
+					TextColor3 = themes.TextColor,
+					TextSize = 11
+				})
+			})
+		})
+
+		table.insert(self.modules, StatBox1)
+		--self:Resize()
+
+		local button = StatBox1.Button
+		local input = button.User
+
+		StatBox1.MouseButton1Click:Connect(function()
+
+			if StatBox1.Button.Size ~= UDim2.new(0, 100, 0, 16) then
+				return
+			end
+
+			utility:Tween(StatBox1.Button, {
+				Size = UDim2.new(0, 200, 0, 16),
+				Position = UDim2.new(1, -210, 0.5, -8)
+			}, 0.2)
+
+			wait()
+
+			input.TextXAlignment = Enum.TextXAlignment.Left
+			input:CaptureFocus()
+		end)
+
+		input:GetPropertyChangedSignal("Text"):Connect(function()
+
+			if button.ImageTransparency == 0 and (button.Size == UDim2.new(0, 200, 0, 16) or button.Size == UDim2.new(0, 100, 0, 16)) then -- i know, i dont like this either
+				utility:Pop(button, 10)
+			end
+
+			if callback then
+				callback(input.Text, nil, function(...)
+					self:updateTextbox(StatBox1, ...)
+				end)
+			end
+		end)
+
+		input.FocusLost:Connect(function()
+
+			input.TextXAlignment = Enum.TextXAlignment.Center
+
+			utility:Tween(StatBox1.Button, {
+				Size = UDim2.new(0, 100, 0, 16),
+				Position = UDim2.new(1, -110, 0.5, -8)
+			}, 0.2)
+
+			if callback then
+				callback(input.Text, true, function(...)
+					self:updateTextbox(StatBox1, ...)
+				end)
+			end
+		end)
+
+		return StatBox1
+	end
+
 	function section:addPlayerbox(title, default, callback)
 		local PlayerBox1 = utility:Create("ImageButton", {
 			Name = "PlayerBox1",
@@ -1436,7 +1544,7 @@ do
 
 		return PlayerBox1
 	end
-	
+
 	function section:addColorPicker(title, default, callback)
 		local colorpicker = utility:Create("ImageButton", {
 			Name = "ColorPicker",
